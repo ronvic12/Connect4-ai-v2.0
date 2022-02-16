@@ -89,20 +89,56 @@ class minimaxAI(connect4Player):
             
         current_state = deepcopy(env)
         move[:]=[self.minimax(current_state,1,MaxPlayer)]
-        print("finished")
+        
+        
+        
+        
+    def winning_move(self,env, piece):
+        # Check horizontal locations for win
+        for c in range(COLUMN_COUNT-3):
+            for r in range(ROW_COUNT):
+                if env.board[r][c] == piece and env.board[r][c+1] == piece and env.board[r][c+2] == piece and env.board[r][c+3] == piece:
+                    return True
+
+    # Check vertical locations for win
+        for c in range(COLUMN_COUNT):
+            for r in range(ROW_COUNT-3):
+                if env.board[r][c] == piece and env.board[r+1][c] == piece and env.board[r+2][c] == piece and env.board[r+3][c] == piece:
+                    return True
+
+    # Check positively sloped diaganols
+        for c in range(COLUMN_COUNT-3):
+            for r in range(ROW_COUNT-3):
+                if env.board[r][c] == piece and env.board[r+1][c+1] == piece and env.board[r+2][c+2] == piece and env.board[r+3][c+3] == piece:
+                    return True
+
+    # Check negatively sloped diaganols
+        for c in range(COLUMN_COUNT-3):
+            for r in range(3, ROW_COUNT):
+                if env.board[r][c] == piece and env.board[r-1][c+1] == piece and env.board[r-2][c+2] == piece and env.board[r-3][c+3] == piece:
+                    return True
+                
+                
+                
         
     def minimax(self,env,depth,maximizingPlayer):
         playerID = env.turnPlayer.position
         playerhistory = env.history[0]
-        
         if len(playerhistory) != 0:
          if depth == 0 or env.gameOver(env.history[0][-1],playerID): 
-                
-                evaluation = self.eval(env,env.turnPlayer)-self.eval(env,env.turnPlayer.opponent)
-                return evaluation
-        
+                if depth == 0:
+                    evaluation = self.eval(env,env.turnPlayer)-self.eval(env,env.turnPlayer.opponent)
+                    return evaluation
+                else:
+                    if self.winning_move(env,env.turnPlayer.position):
+                        return 100000000000000
+                    elif self.winning_move(env,env.turnPlayer.opponent.position):
+                        return -100000000000000
+                    else:
+                        return 0
+        print("done")
+                    
         if maximizingPlayer == True:
-          
             value = -math.inf
             best_move= random.choice(self.valid_locations(env))
             
@@ -113,7 +149,6 @@ class minimaxAI(connect4Player):
                 self.simulateMove(board_copy,col, env.turnPlayer.position)
                 
                 child_val = self.minimax(board_copy,depth-1,False)
-                
                 if child_val > value:
                     value = child_val
                     best_move = col # best_move = child_move
@@ -155,6 +190,7 @@ class minimaxAI(connect4Player):
         
         middle_count = middle_array.count(piece.position)
         score += middle_count * 3
+        
         
     #Score horizontal
         for r in range(ROW_COUNT):
@@ -211,6 +247,10 @@ class minimaxAI(connect4Player):
 
 
 
+
+
+
+
 class alphaBetaAI(connect4Player):
 
     def play(self, env, move):
@@ -222,16 +262,52 @@ class alphaBetaAI(connect4Player):
         current_state = deepcopy(env)
         move[:]=[self.alphabeta(current_state,1,-math.inf,math.inf,MaxPlayer)]
 
+    def winning_move(self,env, piece):
+        # Check horizontal locations for win
+        for c in range(COLUMN_COUNT-3):
+            for r in range(ROW_COUNT):
+                if env.board[r][c] == piece and env.board[r][c+1] == piece and env.board[r][c+2] == piece and env.board[r][c+3] == piece:
+                    return True
 
+    # Check vertical locations for win
+        for c in range(COLUMN_COUNT):
+            for r in range(ROW_COUNT-3):
+                if env.board[r][c] == piece and env.board[r+1][c] == piece and env.board[r+2][c] == piece and env.board[r+3][c] == piece:
+                    return True
+
+    # Check positively sloped diaganols
+        for c in range(COLUMN_COUNT-3):
+            for r in range(ROW_COUNT-3):
+                if env.board[r][c] == piece and env.board[r+1][c+1] == piece and env.board[r+2][c+2] == piece and env.board[r+3][c+3] == piece:
+                    return True
+
+    # Check negatively sloped diaganols
+        for c in range(COLUMN_COUNT-3):
+            for r in range(3, ROW_COUNT):
+                if env.board[r][c] == piece and env.board[r-1][c+1] == piece and env.board[r-2][c+2] == piece and env.board[r-3][c+3] == piece:
+                    return True
 
     def alphabeta(self,env,depth,alpha,beta,maximizingPlayer):
         playerID = env.turnPlayer.position
         playerhistory = env.history[0]
-        
         if len(playerhistory) != 0:
          if depth == 0 or env.gameOver(env.history[0][-1],playerID): 
+             
+                if depth == 0:
                     evaluation = self.eval(env,env.turnPlayer)-self.eval(env,env.turnPlayer.opponent)
-                    return evaluation        
+                    return evaluation 
+                      
+                else:
+                    if self.winning_move(env,env.turnPlayer.position):
+                        return math.inf
+                    elif self.winning_move(env,env.turnPlayer.opponent.position):
+                        return -math.inf
+                    else:
+                        return 0
+                    
+        print("done") 
+                
+                    
         if maximizingPlayer == True:
           
             value = -math.inf
@@ -242,9 +318,10 @@ class alphaBetaAI(connect4Player):
                 board_copy = deepcopy(env) # double check this one
                 
                 self.simulateMove(board_copy,col, env.turnPlayer.position)
-                
+                # print("Max:")
+                # print("at depth ",depth)
                 child_val = self.alphabeta(board_copy,depth-1,alpha,beta,False)
-                
+                # print("child val is ",child_val)
                 if child_val > value:
                     value = child_val
                     best_move = col 
@@ -262,7 +339,10 @@ class alphaBetaAI(connect4Player):
                 board_copy = deepcopy(env) # double check this one
                 
                 self.simulateMove(board_copy,col, env.turnPlayer.opponent.position)
+                # print("Min:")
+                # print("at depth ",depth)
                 child_val = self.alphabeta(board_copy,depth-1,alpha,beta,True)
+                # print("child val is ",child_val)
                 if child_val < value:
                     value = child_val
                     best_move = col # best_move = child_move
@@ -319,7 +399,7 @@ class alphaBetaAI(connect4Player):
                 token_list=[env.board[r+3-i][c+i] for i in range(4)]
                 score+=self.eval_score_method(token_list,piece.position)
                 
-        
+                
         return score
         
         
@@ -368,6 +448,10 @@ size = (width, height)
 RADIUS = int(SQUARESIZE/2 - 5)
 
 screen = pygame.display.set_mode(size)
+
+
+
+
 
 
 
