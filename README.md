@@ -676,10 +676,17 @@ Seed 6 (python3 main.py -p1 monteCarloAI -p2 alphaBetaAI -limit_players 1,2 -vis
 Player  2  has won
 
 
+Seed 7 (python3 main.py -p1 monteCarloAI -p2 alphaBetaAI -limit_players 1,2 -visualize True -verbose True -seed 7)
 
 
 
-
+[[2 0 0 2 2 0 0]
+ [1 0 0 2 1 0 0]
+ [1 1 1 2 2 0 1]
+ [2 2 2 1 2 0 2]
+ [1 1 1 2 1 0 2]
+ [1 1 2 2 1 1 1]]
+Player  1  has won
 
 
 
